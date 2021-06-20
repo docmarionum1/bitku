@@ -100,8 +100,8 @@ export async function getUserHaikus(user) {
   return await fcl
   .send([
     fcl.script`
-      import HaikuNFT from 0xf8d6e0586b0a20c7
-      import NonFungibleToken from 0xf8d6e0586b0a20c7
+      import HaikuNFT from 0xHAIKUNFTADDRESS
+      import NonFungibleToken from 0xNONFUNGIBLETOKENADDRESS
       
       pub fun main(address: Address): {UInt64: String} {
         let account = getAccount(address)

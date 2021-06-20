@@ -16,6 +16,7 @@ import AuthCluster from "./components/AuthCluster";
 import Mint from './components/Mint';
 import Haikus from './components/Haikus';
 import {getHaikus} from './cadence/scripts';
+import { FEATURED_ADDRESS } from "./config";
 
 const theme = createMuiTheme({
   typography: {
@@ -61,8 +62,8 @@ function App() {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [typingEnd, setTypingEnd] = useState(false);
   const {userHaikus} = useCurrentUser();
-  const featuredAddress = "0xf8d6e0586b0a20c7";
-  const featuredIds = [16, 7, 28, 46, 60, 44, 38, 21]
+  const featuredAddress = FEATURED_ADDRESS;
+  const featuredIds = [40, 29, 0, 4, 5, 28, 41, 62];
   const [featuredHaikus, setFeaturedHaikus] = useState({});
 
   const handleErrorClose = () => setSnackbarOpen(false);
