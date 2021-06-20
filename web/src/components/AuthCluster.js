@@ -6,6 +6,7 @@ import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import Typography from '@material-ui/core/Typography';
 
 import useCurrentUser from "../hooks/useCurrentUser";
 
@@ -15,11 +16,14 @@ const useStyles = makeStyles(theme => ({
     // top: theme.spacing(1),
     // right: theme.spacing(1)
     display: "flex",
-    justifyContent: "flex-end",
+    justifyContent: "space-between",
     padding: theme.spacing(1)
   },
   button: {
     
+  },
+  about: {
+    color: "black"
   }
 }))
 
@@ -34,6 +38,7 @@ export function AuthCluster() {
 
   return (
     <div className={classes.root}>
+      <Typography variant="h5"><a href="https://github.com/docmarionum1/bitku#readme" target="_blank" className={classes.about}>About</a></Typography>
       {user.loggedIn ?
         <React.Fragment>
           <div>
