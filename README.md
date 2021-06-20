@@ -58,3 +58,10 @@ Run the contract tests with:
 (For tests to pass, the computation limit needs to be increased from the default 999).
 Modify `web/node_modules/flow-js-testing/dist/index.js` changing 999 to 999999.
 TODO: Allow limit to be configured in sendTransaction in `web/node_modules/flow-js-testing/src/interaction.js`
+
+### Deployment
+
+1. Create accounts on testnet for the bitku contracts and the charity by following these [instructions](https://docs.onflow.org/dapp-deployment/testnet-deployment/#getting-started-on-testnet). Update `flow.json`.
+2. Deploy the contracts with `flow project deploy --network=testnet --update`
+3. From `web` run `npm run build` and then copy the files into the deployment repository and commit and push them to github.
+4. If `HaikuNFT` needs to be updated, replace the from `*.cdc` imports with the actual addresses and then update it with `flow accounts update-contract HaikuNFT cadence/contracts/HaikuNFT.cdc --network=testnet --signer testnet-bitku-account`
