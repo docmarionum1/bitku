@@ -15,7 +15,7 @@ import {useCurrentUser} from "./hooks/useCurrentUser";
 import AuthCluster from "./components/AuthCluster";
 import Mint from './components/Mint';
 import Haikus from './components/Haikus';
-import {getHaiku} from './cadence/scripts';
+import {getHaikus} from './cadence/scripts';
 
 const theme = createMuiTheme({
   typography: {
@@ -62,7 +62,7 @@ function App() {
   const [typingEnd, setTypingEnd] = useState(false);
   const {userHaikus} = useCurrentUser();
   const featuredAddress = "0xf8d6e0586b0a20c7";
-  const featuredIds = [15, 7, 16, 19, 9, 42, 1, 63];
+  const featuredIds = [16, 7, 28, 46, 60, 44, 38, 21]
   const [featuredHaikus, setFeaturedHaikus] = useState({});
 
   const handleErrorClose = () => setSnackbarOpen(false);
@@ -75,22 +75,12 @@ function App() {
 
   useEffect(() => {
     async function getText() {
-      const haikus = {};
-    
+      const requestedHaikus = [];
       for (const id of featuredIds) {
-        haikus[id] = null;
+        requestedHaikus.push({key: id, value: featuredAddress});
       }
 
-      setFeaturedHaikus(haikus);
-
-      for (const id of featuredIds) {
-        try {
-          const text = await getHaiku(featuredAddress, id);
-          haikus[id] = text;
-          setFeaturedHaikus({...haikus});
-        } catch {}
-      }
-
+      setFeaturedHaikus(await getHaikus(requestedHaikus));
     }
 
     getText();

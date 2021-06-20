@@ -26,3 +26,4 @@ yarn-error.log*
 fcl-dev-wallet
 flow.json
 cadence/contracts/templates
+keys.txt

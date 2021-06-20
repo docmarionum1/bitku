@@ -5,27 +5,35 @@ Git clone fcl-dev-wallet
 
 ## Running
 
-From the root directory start the emulator with
+### From the root directory start the emulator with
 
   `flow emulator`
 
-Then deploy the contracts with:
+### Then deploy the contracts with:
 
   `flow project deploy --network=emulator --update`
 
-Other commands with the flow cli:
+### Set up the wallet `fcl-dev-wallet/`:
 
-  #flow accounts create --network=emulator --key 1719d6f599b841b84cd282b2930cc5b9e88e6e56a8c7b3dfa71aec0205705d238c62080898568030be0bd4d187ebf2d3e22be03a181c5ff32571c1c2b19f84df --signer emulator-account
+  `git clone git@github.com:onflow/fcl-dev-wallet.git`
+  
+  Modify `package.json` to serve the wallet on port 3001
 
-  flow transactions send cadence/transactions/transfer_tokens.cdc --args-json '[{"type": "UFix64", "value": "1.0"}, {"type": "Address", "value": "0xf669cb8d41ce0c74"}]'
+  Change `"dev": "next dev"` to `"dev": "next dev -p 3001"`
 
-  flow scripts execute cadence/scripts/CheckCollection.cdc
-
-
-Start the wallet `fcl-dev-wallet/`
-
-  npm run dev
+  `npm run dev`
 
 Start the webserver in `web/`
 
   yarn start
+
+Before trying to mint any haikus,
+Create new test accounts from the fcl-dev-wallet web interface to create the charity address by clicking "Initialize Dev Wallet for more Accounts" on the screen to connect your wallet.
+
+Run the contract tests with:
+
+  `npm run test-cadence`
+
+(For tests to pass, the computation limit needs to be increased from the default 999).
+Modify `web/node_modules/flow-js-testing/dist/index.js` changing 999 to 999999.
+TODO: Allow limit to be configured in sendTransaction in `web/node_modules/flow-js-testing/src/interaction.js`

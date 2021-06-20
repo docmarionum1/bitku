@@ -110,30 +110,29 @@ pub contract HaikuNFT: NonFungibleToken {
         return Int(i)
     }
 
-    pub fun getOptions(totalSyllables: Int, previousPreviousWord: String, previousWord: String): {String: Int} {
+    pub fun getOptions(lineNum: Int, previousPreviousWord: String, previousWord: String): {String: Int} {
         let wordPair: String = previousPreviousWord.concat(" ").concat(previousWord)
 
-        // Check surrounding syllable counts in case this exact one is not defined for these words
+        // Check surrounding lines in case this exact one is not defined for these words
+        // < 3 ensures that we can check up to two lines away, which would be the max from line 0 -> 2 or vice versa
         var i = 0
         while i < 3 {
-            // Group them into sets of 4
-            //var syllables = HaikuNFT.ceil(UFix64(totalSyllables) / 4.0) + i
-            var syllables = totalSyllables + i
+            var line = lineNum + i
             
-            if (SpaceModel.model.containsKey(wordPair)) && (SpaceModel.model[wordPair]!.containsKey(syllables)) {
-                return SpaceModel.model[wordPair]![syllables]!
+            if (SpaceModel.model.containsKey(wordPair)) && (SpaceModel.model[wordPair]!.containsKey(line)) {
+                return SpaceModel.model[wordPair]![line]!
             }
-            if Model.model.containsKey(previousWord) && Model.model[previousWord]!.containsKey(syllables) {
-                return Model.model[previousWord]![syllables]!
+            if Model.model.containsKey(previousWord) && Model.model[previousWord]!.containsKey(line) {
+                return Model.model[previousWord]![line]!
             }
 
-            //syllables = HaikuNFT.ceil(UFix64(totalSyllables) / 4.0) - i
-            syllables = totalSyllables - i
-            if SpaceModel.model.containsKey(wordPair) && SpaceModel.model[wordPair]!.containsKey(syllables) {
-                return SpaceModel.model[wordPair]![syllables]!
+            line = lineNum - i
+
+            if SpaceModel.model.containsKey(wordPair) && SpaceModel.model[wordPair]!.containsKey(line) {
+                return SpaceModel.model[wordPair]![line]!
             }
-            if Model.model.containsKey(previousWord) && Model.model[previousWord]!.containsKey(syllables) {
-                return Model.model[previousWord]![syllables]!
+            if Model.model.containsKey(previousWord) && Model.model[previousWord]!.containsKey(line) {
+                return Model.model[previousWord]![line]!
             }
 
             i = i + 1
@@ -200,7 +199,6 @@ pub contract HaikuNFT: NonFungibleToken {
         var lineNum: Int = 0
         var previousPreviousWord: String = ""
         var previousWord: String = "b" // b == START
-        //let haiku: [String] = []
         var haiku: String = ""
 
         while previousWord != "END" {
@@ -225,7 +223,7 @@ pub contract HaikuNFT: NonFungibleToken {
                 
                 // If it's not time to end, or if we didn't find end options
                 if !end {
-                    options = HaikuNFT.getOptions(totalSyllables: lineNum, previousPreviousWord: previousPreviousWord, previousWord: previousWord)
+                    options = HaikuNFT.getOptions(lineNum: lineNum, previousPreviousWord: previousPreviousWord, previousWord: previousWord)
                 }
 
                 // Go through the options that we found
@@ -266,7 +264,6 @@ pub contract HaikuNFT: NonFungibleToken {
                 }
 
                 if end {
-                    haiku = haiku.concat("$")
                     break
                 }
             }
@@ -275,7 +272,7 @@ pub contract HaikuNFT: NonFungibleToken {
         return haiku
     }
     
-    pub fun mintHaiku(recipient: &NonFungibleToken.Collection, vault: @FungibleToken.Vault, id: UInt64) { // Todo handle payment
+    pub fun mintHaiku(recipient: &NonFungibleToken.Collection, vault: @FungibleToken.Vault, id: UInt64) {
         pre {
             // Make sure that the ID matches the current ID
             id == HaikuNFT.totalSupply: "The given ID has already been minted."
@@ -314,36 +311,18 @@ pub contract HaikuNFT: NonFungibleToken {
 
     }
 
-    // Resource that an admin or something similar would own to be
-    // able to mint new NFTs
-    //
-	// pub resource NFTMinter {
 
-	// 	// mintNFT mints a new NFT with a new ID
-	// 	// and deposit it in the recipients collection using their collection reference
-	// 	pub fun mintNFT(recipient: &{NonFungibleToken.CollectionPublic}) {
-
-	// 		// create a new NFT
-	// 		var newNFT <- create Haiku(initID: ExampleNFT.totalSupply)
-
-	// 		// deposit it in the recipient's account using their reference
-	// 		recipient.deposit(token: <-newNFT)
-
-    //         ExampleNFT.totalSupply = ExampleNFT.totalSupply + UInt64(1)
-	// 	}
-	// }
-
-	init() {
+	init(charityAddress: Address) {
         // Initialize the total supply
         self.totalSupply = 0
         self.maxSupply = 1024
         self.preMint = 64
-        //self.initialPrice = 0.1
+
         // Intended to be one magnitude smaller, so we'll just divide again in the price function
         self.priceDelta = 0.00000345
 
         // Set the charity address
-        self.charityAddress = 0x01cf0e2f2f715450 
+        self.charityAddress = charityAddress 
 
         // Create a Collection resource and save it to storage
         let collection <- create Collection()
@@ -364,12 +343,6 @@ pub contract HaikuNFT: NonFungibleToken {
             /public/HaikuCollection,
             target: /storage/HaikuCollection
         )
-
-        // Create a Minter resource and save it to storage
-        //let minter <- create NFTMinter()
-        //self.account.save(<-minter, to: /storage/NFTMinter)
-
-        
 
         emit ContractInitialized()
 	}

@@ -6,7 +6,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import TypeWriter from 'react-typewriter';
 
 
-import {getHaiku, getNextIDAndPrice} from "../cadence/scripts";
+import {getHaikus, getNextIDAndPrice} from "../cadence/scripts";
 import {mintHaikuTransaction} from "../cadence/transactions";
 import useCurrentUser from "../hooks/useCurrentUser";
 
@@ -51,7 +51,8 @@ export function Mint({setError}) {
       // Mint the new haiku and get the text
       await mintHaikuTransaction(nextHaiku);
       window.scrollTo(0, 0);
-      const text = await getHaiku(user.addr, nextHaiku.id);
+      const response = await getHaikus({key: nextHaiku.id, value: user.addr});
+      const text = response[Object.keys(response)[0]];
 
       // Update the newly minted haiku component
       setHaiku({
