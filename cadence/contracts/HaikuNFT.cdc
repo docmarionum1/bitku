@@ -277,6 +277,9 @@ pub contract HaikuNFT: NonFungibleToken {
             // Make sure that the ID matches the current ID
             id == HaikuNFT.totalSupply: "The given ID has already been minted."
 
+            // Make sure that the ID is not greater than the max supply
+            id < HaikuNFT.maxSupply: "There are no haiku left."
+
             // Make sure that the given vault has enough FLOW
             vault.balance >= HaikuNFT.currentPrice(): "The given FLOW vault doesn't have enough FLOW."
         }
@@ -315,7 +318,7 @@ pub contract HaikuNFT: NonFungibleToken {
 	init(charityAddress: Address) {
         // Initialize the total supply
         self.totalSupply = 0
-        self.maxSupply = 1024
+        self.maxSupply = 70
         self.preMint = 64
 
         // Intended to be one magnitude smaller, so we'll just divide again in the price function
