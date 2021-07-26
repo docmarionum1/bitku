@@ -318,7 +318,7 @@ pub contract HaikuNFT: NonFungibleToken {
 	init(charityAddress: Address) {
         // Initialize the total supply
         self.totalSupply = 0
-        self.maxSupply = 70
+        self.maxSupply = 1024
         self.preMint = 64
 
         // Intended to be one magnitude smaller, so we'll just divide again in the price function
