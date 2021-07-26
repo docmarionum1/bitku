@@ -30,7 +30,7 @@ import NonFungibleToken from 0xNONFUNGIBLETOKENADDRESS
 
 pub fun main(id: UInt64, address: Address): String {
   let account = getAccount(address)
-  let capability = account.getCapability(/public/HaikuCollection)
+  let capability = account.getCapability(HaikuNFT.HaikuCollectionPublicPath)
   let ref = capability.borrow<&{HaikuNFT.HaikuCollectionPublic, NonFungibleToken.CollectionPublic}>() ?? panic("Could not borrow")
 
   return ref.borrowHaiku(id: id).text
@@ -46,7 +46,7 @@ pub fun main(haikus: { UInt64: Address }): { UInt64: String } {
   for id in haikus.keys {
     let address = haikus[id]!
     let account = getAccount(address)
-    let capability = account.getCapability(/public/HaikuCollection)
+    let capability = account.getCapability(HaikuNFT.HaikuCollectionPublicPath)
     let ref = capability.borrow<&{HaikuNFT.HaikuCollectionPublic, NonFungibleToken.CollectionPublic}>() ?? panic("Could not borrow")
     response[id] = ref.borrowHaiku(id: id).text
   }
@@ -105,7 +105,7 @@ export async function getUserHaikus(user) {
       
       pub fun main(address: Address): {UInt64: String} {
         let account = getAccount(address)
-        let capability = account.getCapability(/public/HaikuCollection)
+        let capability = account.getCapability(HaikuNFT.HaikuCollectionPublicPath)
         let ref = capability.borrow<&{HaikuNFT.HaikuCollectionPublic, NonFungibleToken.CollectionPublic}>() ?? panic("Could not borrow")
       
         let haikus: {UInt64: String} = {}

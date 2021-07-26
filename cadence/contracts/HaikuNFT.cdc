@@ -1,6 +1,5 @@
-// This is an example implementation of a Flow Non-Fungible Token
-// It is not part of the official standard but it assumed to be
-// very similar to how many NFTs would implement the core functionality.
+// This contract implements Bitku's HaikuNFT including the NFT resource which
+// stores the text of each haiku and the function for minting+generating haiku.
 
 import NonFungibleToken from "./NonFungibleToken.cdc"
 import FlowToken from "./FlowToken.cdc"
@@ -18,7 +17,8 @@ pub contract HaikuNFT: NonFungibleToken {
     pub let preMint: UInt64
     pub let priceDelta: UFix64
     pub let charityAddress: Address
-    //pub let contractAddress
+    pub let HaikuCollectionStoragePath: StoragePath
+    pub let HaikuCollectionPublicPath: PublicPath
 
     pub event ContractInitialized()
     pub event Withdraw(id: UInt64, from: Address?)
@@ -26,8 +26,7 @@ pub contract HaikuNFT: NonFungibleToken {
 
     pub resource NFT: NonFungibleToken.INFT {
         pub let id: UInt64
-
-        pub var text: String
+        pub let text: String
 
         init(initID: UInt64, text: String) {
             self.id = initID
@@ -311,11 +310,14 @@ pub contract HaikuNFT: NonFungibleToken {
 
         recipient.deposit(token: <- create HaikuNFT.NFT(initID: HaikuNFT.totalSupply, text: haiku))
         HaikuNFT.totalSupply = HaikuNFT.totalSupply + (1 as UInt64)
-
     }
 
 
-	init(charityAddress: Address) {
+    init(charityAddress: Address) {
+        // Set paths
+        self.HaikuCollectionStoragePath = /storage/BitkuCollection
+        self.HaikuCollectionPublicPath = /public/BitkuCollection
+
         // Initialize the total supply
         self.totalSupply = 0
         self.maxSupply = 1024
@@ -339,14 +341,14 @@ pub contract HaikuNFT: NonFungibleToken {
             self.totalSupply = self.totalSupply + (1 as UInt64) 
         }
 
-        self.account.save(<-collection, to: /storage/HaikuCollection)
+        self.account.save(<-collection, to: self.HaikuCollectionStoragePath)
 
         // create a public capability for the collection
         self.account.link<&HaikuNFT.Collection{NonFungibleToken.CollectionPublic, HaikuNFT.HaikuCollectionPublic}>(
-            /public/HaikuCollection,
-            target: /storage/HaikuCollection
+            self.HaikuCollectionPublicPath,
+            target: self.HaikuCollectionStoragePath
         )
 
         emit ContractInitialized()
-	}
+    }
 }

@@ -14,20 +14,20 @@ transaction (haikuID: UInt64, price: UFix64) {
     
     prepare(signer: AuthAccount) {
         // if the account doesn't already have a collection
-        if signer.borrow<&HaikuNFT.Collection>(from: /storage/HaikuCollection) == nil {
+        if signer.borrow<&HaikuNFT.Collection>(from: HaikuNFT.HaikuCollectionStoragePath) == nil {
 
 
             // create a new empty collection
             let collection <- HaikuNFT.createEmptyCollection()
             
             // save it to the account
-            signer.save(<-collection, to: /storage/HaikuCollection)
+            signer.save(<-collection, to: HaikuNFT.HaikuCollectionStoragePath)
 
             // create a public capability for the collection
-            signer.link<&{NonFungibleToken.CollectionPublic, HaikuNFT.HaikuCollectionPublic}>(/public/HaikuCollection, target: /storage/HaikuCollection)
+            signer.link<&{NonFungibleToken.CollectionPublic, HaikuNFT.HaikuCollectionPublic}>(HaikuNFT.HaikuCollectionPublicPath, target: HaikuNFT.HaikuCollectionStoragePath)
         }
 
-        self.collection = signer.borrow<&NonFungibleToken.Collection>(from: /storage/HaikuCollection) 
+        self.collection = signer.borrow<&NonFungibleToken.Collection>(from: HaikuNFT.HaikuCollectionStoragePath) 
              ?? panic("Could not borrow reference to NFT Collection!")
 
         // Get a reference to the signer's stored vault
