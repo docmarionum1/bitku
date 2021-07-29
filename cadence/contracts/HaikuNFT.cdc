@@ -36,6 +36,11 @@ pub contract HaikuNFT: NonFungibleToken {
 
     pub resource interface HaikuCollectionPublic {
         pub fun borrowHaiku(id: UInt64): &HaikuNFT.NFT
+
+        // Require all of the base NFT functions to be delcared as well
+        pub fun deposit(token: @NonFungibleToken.NFT)
+        pub fun getIDs(): [UInt64]
+        pub fun borrowNFT(id: UInt64): &NonFungibleToken.NFT
     }
 
     pub resource Collection: NonFungibleToken.Provider, NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic, HaikuCollectionPublic {
