@@ -311,6 +311,9 @@ pub contract HaikuNFT: NonFungibleToken {
            randNumber = HaikuNFT.rand(i: randNumber, m: UInt64(byte))
         }
 
+        // Include the id in seed
+        randNumber = HaikuNFT.rand(i: randNumber, m: id)
+
         let haiku = HaikuNFT.generateHaiku(randNumber)
 
         recipient.deposit(token: <- create HaikuNFT.NFT(initID: HaikuNFT.totalSupply, text: haiku))
