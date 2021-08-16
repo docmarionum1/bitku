@@ -47,7 +47,7 @@ The steps below outline how to set the project up locally and test it.
 4. Deploy the contracts from the root directory with `flow project deploy --network=emulator --update`
 5. Create `web/.env.local` from `web/.env.local.template`
 6. Run `yarn start` in `web/`
-7. Before trying to mint any haikus, Create new test accounts from the fcl-dev-wallet web interface to create the charity address by clicking "Initialize Dev Wallet for more Accounts" on the screen to connect your wallet.
+7. Before trying to mint any haikus, Create new test accounts from the fcl-dev-wallet web interface to create the charity address by clicking "Initialize Dev Wallet for more Accounts" on the screen to connect your wallet. Then enable FUSD for that account via the menu in the top right of the Bitku application.
 
 ### Testing
 

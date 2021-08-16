@@ -1,6 +1,6 @@
 // File: ./src/auth-cluster.js
 
-import React, {useState, useEffect} from "react"
+import React, {useState} from "react"
 import * as fcl from "@onflow/fcl"
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
@@ -9,6 +9,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Typography from '@material-ui/core/Typography';
 
 import useCurrentUser from "../hooks/useCurrentUser";
+import { setupFUSDVaultTransaction } from "../cadence/transactions";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -29,7 +30,7 @@ const useStyles = makeStyles(theme => ({
 
 export function AuthCluster() {
   const classes = useStyles();
-  const {user, balance} = useCurrentUser();
+  const {user, balance, updateBalance} = useCurrentUser();
   const [menuAnchor, setMenuAnchor] = useState(null);
 
   const handleClose = () => {
@@ -50,7 +51,14 @@ export function AuthCluster() {
             open={!!menuAnchor}
             onClose={handleClose}
           >
-            <MenuItem disabled>₣{balance} FLOW</MenuItem>
+            {balance === null ?
+              <MenuItem onClick={async () => {
+                handleClose();
+                await setupFUSDVaultTransaction();
+                updateBalance();
+              }}>Enable FUSD on this wallet</MenuItem> :
+              <MenuItem disabled>{balance} FUSD</MenuItem>
+            }
             <MenuItem onClick={() => {
               handleClose();
               fcl.unauthenticate();
@@ -63,22 +71,6 @@ export function AuthCluster() {
         }
     </div>
   );
-
-  if (user.loggedIn) {
-    return (
-      <div>
-        <span>{user?.addr ?? "No Address"}</span>
-        <span>₣{balance} FLOW</span>
-        <Button onClick={fcl.unauthenticate}>Log Out</Button>
-      </div>
-    )
-  } else {
-    return (
-      <div>
-        <Button onClick={fcl.logIn}>Log In</Button>
-      </div>
-    )
-  }
 }
 
 export default AuthCluster;

@@ -2,7 +2,7 @@
 // stores the text of each haiku and the function for minting+generating haiku.
 
 import NonFungibleToken from "./NonFungibleToken.cdc"
-import FlowToken from "./FlowToken.cdc"
+import FUSD from "./FUSD.cdc"
 import FungibleToken from "./FungibleToken.cdc"
 
 import Words from "./Words.cdc"
@@ -161,7 +161,7 @@ pub contract HaikuNFT: NonFungibleToken {
 
     pub fun currentPrice(): UFix64 {
         let i = UFix64(self.totalSupply - self.preMint)
-        return i*i*i*self.priceDelta / 10.0
+        return i*i*i*self.priceDelta
     }
 
     pub fun captalize(_ a: String): String {
@@ -292,15 +292,15 @@ pub contract HaikuNFT: NonFungibleToken {
         // Split 90% to charity
         let charityVault <- vault.withdraw(amount: vault.balance * 0.9)
         let charityReceiverRef = getAccount(self.charityAddress)
-            .getCapability(/public/flowTokenReceiver)
-            .borrow<&{FungibleToken.Receiver}>() ?? panic("Could not borrow reference to contract's flow token receiver")
+            .getCapability(/public/fusdReceiver)
+            .borrow<&{FungibleToken.Receiver}>() ?? panic("Could not borrow reference to contract's fusd receiver")
         charityReceiverRef.deposit(from: <- charityVault)
 
 
         // Send remaining 10% to contract account
         let contractReceiverRef = self.account
-            .getCapability(/public/flowTokenReceiver)
-            .borrow<&{FungibleToken.Receiver}>() ?? panic("Could not borrow reference to contract's flow token receiver")
+            .getCapability(/public/fusdReceiver)
+            .borrow<&{FungibleToken.Receiver}>() ?? panic("Could not borrow reference to contract's fusd receiver")
         contractReceiverRef.deposit(from: <- vault)
 
         // Seed the random number generator with the transaction info
@@ -331,7 +331,6 @@ pub contract HaikuNFT: NonFungibleToken {
         self.maxSupply = 1024
         self.preMint = 64
 
-        // Intended to be one magnitude smaller, so we'll just divide again in the price function
         self.priceDelta = 0.00000345
 
         // Set the charity address
@@ -339,8 +338,6 @@ pub contract HaikuNFT: NonFungibleToken {
 
         // Create a Collection resource and save it to storage
         let collection <- create Collection()
-
-        
 
         // Pre-mint n haikus and save them to this collection
         while self.totalSupply < self.preMint {

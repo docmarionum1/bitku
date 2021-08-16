@@ -18,8 +18,12 @@ export function useCurrentUser() {
   useEffect(() => fcl.currentUser().subscribe(setUser), []);
 
   const updateBalance = useCallback(async () => {
-    const balance = await getBalance(user);
-    setBalance(balance);
+    try {
+      const balance = await getBalance(user);
+      setBalance(balance);
+    } catch {
+      setBalance(null);
+    }
   }, [user]);
 
   useEffect(() => {

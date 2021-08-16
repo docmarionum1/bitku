@@ -1,6 +1,7 @@
 import React, {useState, useEffect, useCallback} from "react"
 
 import Button from '@material-ui/core/Button';
+import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import TypeWriter from 'react-typewriter';
@@ -16,6 +17,13 @@ const useStyles = makeStyles(theme => ({
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-evenly"
+  },
+  popper: {
+    top: '10px !important'
+  },
+  tooltip: {
+    fontSize: '1rem',
+    maxWidth: 'none',
   }
 }));
 
@@ -25,7 +33,7 @@ export function Mint({setError}) {
   const [nextHaiku, setNextHaiku] = useState(null);
   const [loading, setLoading] = useState(true);
   const [haiku, setHaiku] = useState(null);
-  const {user, updateBalance, setUserHaikus} = useCurrentUser();
+  const {user, balance, updateBalance, setUserHaikus} = useCurrentUser();
 
   useEffect(() => {
     async function fetch() {
@@ -73,7 +81,7 @@ export function Mint({setError}) {
       }
       setNextHaiku(null);
     }
-  }, [user, nextHaiku])
+  }, [user, nextHaiku]);
 
   if (loading) {
     return (
@@ -82,6 +90,19 @@ export function Mint({setError}) {
         <div className="double-bounce2"></div>
       </div>
     );
+  }
+
+  const mintingDisabled = !user.loggedIn || nextHaiku === null || balance === null || balance < nextHaiku.price;
+  let tooltipTitle = `Mint Bitku #${nextHaiku.id} for ${nextHaiku.price} FUSD`;
+
+  if (!user.loggedIn) {
+    tooltipTitle = "To mint a Bitku, please connect your wallet using the menu in the top right";
+  } else if (balance === null) {
+    tooltipTitle = "To mint a Bitku, please enable FUSD for your wallet using the menu in the top right";
+  } else if (balance < nextHaiku.price) {
+    tooltipTitle = "You don't have enough FUSD";
+  } else if (nextHaiku === null) {
+    tooltipTitle = "No Bitkus remaining";
   }
 
   return (
@@ -93,9 +114,13 @@ export function Mint({setError}) {
         </div>
       }
       <div>
-        <Button variant="outlined" disabled={!user.loggedIn || nextHaiku === null} onClick={mintHaiku}>
-            Mint Bitku #{nextHaiku.id}/1024 (₣{nextHaiku.price} FLOW)
-        </Button>
+        <Tooltip classes={{popper: classes.popper, tooltip: classes.tooltip}} title={tooltipTitle} open={mintingDisabled} placement="bottom" arrow>
+          <span>
+            <Button variant="outlined" disabled={mintingDisabled} onClick={mintHaiku}>
+                Mint Bitku #{nextHaiku.id}/1024 ({nextHaiku.price} FUSD)
+            </Button>
+          </span>
+        </Tooltip>
       </div>
     </div>
   );

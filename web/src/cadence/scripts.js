@@ -74,19 +74,16 @@ export async function getBalance(user) {
   .send([
     fcl.script`
       import FungibleToken from 0xFUNGIBLETOKENADDRESS
-      import FlowToken from 0xTOKENADDRESS
+      import FUSD from 0xFUSDADDRESS
       
       pub fun main(account: Address): UFix64 {
       
           let vaultRef = getAccount(account)
-              .getCapability(/public/flowTokenBalance)
-              .borrow<&FlowToken.Vault{FungibleToken.Balance}>()
+              .getCapability(/public/fusdBalance)
+              .borrow<&FUSD.Vault{FungibleToken.Balance}>()
               ?? panic("Could not borrow Balance reference to the Vault")
       
           return vaultRef.balance
-          
-          
-          //return getAccount(account).balance
       }
     `,
     fcl.args([
