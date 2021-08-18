@@ -8,6 +8,7 @@ import TypeWriter from 'react-typewriter';
 
 import { RampInstantSDK } from '@ramp-network/ramp-instant-sdk';
 
+import { LOGO_URL } from "../config";
 import {getHaikus, getNextIDAndPrice} from "../cadence/scripts";
 import {mintHaikuTransaction} from "../cadence/transactions";
 import useCurrentUser from "../hooks/useCurrentUser";
@@ -125,7 +126,7 @@ export function Mint({setError}) {
           <a href="#" className={classes.link} onClick={() => {
             new RampInstantSDK({
               hostAppName: 'Bitku',
-              hostLogoUrl: "http://localhost:3000/logo512.png",
+              hostLogoUrl: LOGO_URL,
               swapAmount: Math.ceil(Math.max(nextHaiku.price - balance, rampMinPurchaseAmount)*Math.pow(10, 8)),
               swapAsset: "FLOW_FUSD",
               userAddress: user.addr,

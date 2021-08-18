@@ -8,6 +8,7 @@ config()
   //.put("0xProfile", process.env.REACT_APP_CONTRACT_PROFILE) // Will let us use `0xProfile` in our Cadence
 
 export let FEATURED_ADDRESS = "";
+export let LOGO_URL = "";
   
   
 if (process.env.REACT_APP_FLOW_NETWORK === "emulator") {
@@ -20,8 +21,7 @@ if (process.env.REACT_APP_FLOW_NETWORK === "emulator") {
     .put("0xFUSDADDRESS", contract_address);
 
   FEATURED_ADDRESS = contract_address;
-
-  FEATURED_ADDRESS = "0xf8d6e0586b0a20c7";
+  LOGO_URL = "http://localhost:3000/logo512.png"
 } else if (process.env.REACT_APP_FLOW_NETWORK === "testnet") {
   const contract_address = "0x15032505846acdad";
   config()
@@ -32,4 +32,5 @@ if (process.env.REACT_APP_FLOW_NETWORK === "emulator") {
     .put("0xFUSDADDRESS", "0xe223d8a629e49c68");
 
   FEATURED_ADDRESS = contract_address;
+  LOGO_URL = "https://testnet.bitku.art/logo512.png"
 }
