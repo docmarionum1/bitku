@@ -6,6 +6,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import TypeWriter from 'react-typewriter';
 
+import { RampInstantSDK } from '@ramp-network/ramp-instant-sdk';
 
 import {getHaikus, getNextIDAndPrice} from "../cadence/scripts";
 import {mintHaikuTransaction} from "../cadence/transactions";
@@ -19,11 +20,15 @@ const useStyles = makeStyles(theme => ({
     justifyContent: "space-evenly"
   },
   popper: {
-    top: '10px !important'
+    top: '10px !important',
+    zIndex: 100
   },
   tooltip: {
     fontSize: '1rem',
     maxWidth: 'none',
+  },
+  link: {
+    color: 'inherit'
   }
 }));
 
@@ -34,6 +39,19 @@ export function Mint({setError}) {
   const [loading, setLoading] = useState(true);
   const [haiku, setHaiku] = useState(null);
   const {user, balance, updateBalance, setUserHaikus} = useCurrentUser();
+  const [rampMinPurchaseAmount, setRampMinPurchaseAmount] = useState(null);
+
+  useEffect(() => {
+    async function fetchFUSDInfo() {
+      const response = await fetch("https://api-instant.ramp.network/api/host-api/assets");
+      const assets = await response.json();
+      const fusd = assets.assets.filter(asset => asset.symbol == "FLOW_FUSD")[0];
+
+      setRampMinPurchaseAmount(fusd.priceEur * fusd.minPurchaseAmountEur);
+    }
+
+    fetchFUSDInfo();
+  }, []);
 
   useEffect(() => {
     async function fetch() {
@@ -100,7 +118,25 @@ export function Mint({setError}) {
   } else if (balance === null) {
     tooltipTitle = "To mint a Bitku, please enable FUSD for your wallet using the menu in the top right";
   } else if (balance < nextHaiku.price) {
-    tooltipTitle = "You don't have enough FUSD";
+    tooltipTitle = <span>
+      You don't have enough FUSD.&nbsp; 
+      {rampMinPurchaseAmount &&
+        <React.Fragment>
+          <a href="#" className={classes.link} onClick={() => {
+            new RampInstantSDK({
+              hostAppName: 'Bitku',
+              hostLogoUrl: "http://localhost:3000/logo512.png",
+              swapAmount: Math.ceil(Math.max(nextHaiku.price - balance, rampMinPurchaseAmount)*Math.pow(10, 8)),
+              swapAsset: "FLOW_FUSD",
+              userAddress: user.addr,
+              fiatCurrency: "EUR"
+            }).show();
+          }}>
+            Buy {Math.max(nextHaiku.price - balance, rampMinPurchaseAmount).toFixed(2)} FUSD
+          </a>.
+        </React.Fragment>
+      }
+    </span>;
   } else if (nextHaiku === null) {
     tooltipTitle = "No Bitkus remaining";
   }
@@ -114,7 +150,7 @@ export function Mint({setError}) {
         </div>
       }
       <div>
-        <Tooltip classes={{popper: classes.popper, tooltip: classes.tooltip}} title={tooltipTitle} open={mintingDisabled} placement="bottom" arrow>
+        <Tooltip interactive classes={{popper: classes.popper, tooltip: classes.tooltip}} title={tooltipTitle} open={mintingDisabled} placement="bottom" arrow>
           <span>
             <Button variant="outlined" disabled={mintingDisabled} onClick={mintHaiku}>
                 Mint Bitku #{nextHaiku.id}/1024 ({nextHaiku.price} FUSD)
