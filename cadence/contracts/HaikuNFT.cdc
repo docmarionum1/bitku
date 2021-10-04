@@ -16,7 +16,6 @@ pub contract HaikuNFT: NonFungibleToken {
     pub var totalSupply: UInt64
     pub let preMint: UInt64
     pub let priceDelta: UFix64
-    pub let charityAddress: Address
     pub let HaikuCollectionStoragePath: StoragePath
     pub let HaikuCollectionPublicPath: PublicPath
 
@@ -289,15 +288,7 @@ pub contract HaikuNFT: NonFungibleToken {
         }
         // https://github.com/onflow/flow-core-contracts/blob/master/transactions/flowToken/transfer_tokens.cdc
 
-        // Split 90% to charity
-        let charityVault <- vault.withdraw(amount: vault.balance * 0.9)
-        let charityReceiverRef = getAccount(self.charityAddress)
-            .getCapability(/public/fusdReceiver)
-            .borrow<&{FungibleToken.Receiver}>() ?? panic("Could not borrow reference to contract's fusd receiver")
-        charityReceiverRef.deposit(from: <- charityVault)
-
-
-        // Send remaining 10% to contract account
+        // Deposit payment in contract vault
         let contractReceiverRef = self.account
             .getCapability(/public/fusdReceiver)
             .borrow<&{FungibleToken.Receiver}>() ?? panic("Could not borrow reference to contract's fusd receiver")
@@ -321,7 +312,7 @@ pub contract HaikuNFT: NonFungibleToken {
     }
 
 
-    init(charityAddress: Address) {
+    init() {
         // Set paths
         self.HaikuCollectionStoragePath = /storage/BitkuCollection
         self.HaikuCollectionPublicPath = /public/BitkuCollection
@@ -332,9 +323,6 @@ pub contract HaikuNFT: NonFungibleToken {
         self.preMint = 64
 
         self.priceDelta = 0.00000345
-
-        // Set the charity address
-        self.charityAddress = charityAddress 
 
         // Create a Collection resource and save it to storage
         let collection <- create Collection()

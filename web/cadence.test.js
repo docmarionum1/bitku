@@ -64,14 +64,10 @@ describe("Test HaikuNFT", () => {
 
     // Then deploy the HaikuNFT contract
 
-    // Create a charity address
-    const charity = await getAccountAddress("Charity");
-
     result = await deployContractByName({
       "name": "HaikuNFT",
       "to": account,
-      addressMap,
-      "args": [[charity, Address]]//[{type: "Address", value: charity}]
+      addressMap
     });
 
     addressMap["HaikuNFT"] = await getContractAddress("HaikuNFT");
@@ -147,11 +143,6 @@ describe("Test HaikuNFT", () => {
     await mintFlow(account, "1.0");
     const user_balance = await getFlowBalance(account);
 
-    const charity = await getAccountAddress("Charity");
-    const charity_balance = await getFlowBalance(charity);
-
-    console.log(user_balance, charity_balance);
-
     let code = replaceAddresses(GET_NEXT_ID_AND_PRICE, addressMap);
     let result = await executeScript({ code });
     const price = result['65'];
@@ -165,8 +156,7 @@ describe("Test HaikuNFT", () => {
     result = await sendTransaction({code, args, signers: [account]});
     expect(result.errorMessage).toBe("");
     
-    // User balance goes down and charity goes up
+    // User balance goes down
     expect(parseFloat(user_balance)).toBeGreaterThan(parseFloat(await getFlowBalance(account)));
-    expect(parseFloat(charity_balance)).toBeLessThan(parseFloat(await getFlowBalance(charity)));
   }); 
 });

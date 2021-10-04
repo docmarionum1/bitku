@@ -69,10 +69,6 @@
 			"address": "",
 			"keys": ""
 		},
-		"testnet-charity-account": {
-      "address": "",
-      "keys": ""
-    }
 	},
 	"deployments": {
 		"testnet": {
@@ -81,12 +77,7 @@
 				"SpaceModel",
 				"EndModel",
 				"Words",
-				{
-					"name": "HaikuNFT",
-					"args": [
-						{"type": "Address", "value": ""}
-					]
-				}
+				"HaikuNFT"
 			]
 		},
 		"emulator": {
@@ -96,12 +87,7 @@
 				"Model",
 				"SpaceModel",
 				"EndModel",
-				{
-					"name": "HaikuNFT",
-					"args": [
-						{"type": "Address", "value": "0x01cf0e2f2f715450"}
-					]
-				}, 
+				"HaikuNFT",
 				"NonFungibleToken"
 			]
 		}

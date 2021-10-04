@@ -1,10 +1,9 @@
 # Bitku
 
-[Bitku](https://testnet.bitku.art/) is an (in-development) project to create generative haiku completely on the [Flow](https://www.onflow.org/) blockchain. With Bitku I set out to accomplish three novel (possibly first-of-its-kind) goals:
+[Bitku](https://testnet.bitku.art/) is an (in-development) project to create generative haiku completely on the [Flow](https://www.onflow.org/) blockchain. With Bitku I set out to accomplish two novel (possibly first-of-its-kind) goals:
 
   1. Create a text-based generative NFT
   2. Embed a machine-learning model directly into a smart contract and generate outputs completely on the blockchain without any oracles or side-effects
-  3. Hard code charitable giving into the smart contract, so that a (large) portion of the cost for creating each haiku goes automatically to a charity
 
 ## How do I create a Bitku?
 
@@ -23,7 +22,7 @@
 
 The core of Bitku is comprised of five smart contracts, one that manages the supply and creation of the haiku and four that contain the text-generation model in a compressed format. 
 
-When you click "Mint Bitku" on the Bitku website it sends a transaction on the Flow blockchain to the primary contract's [`mintHaiku`](https://github.com/docmarionum1/bitku/blob/main/cadence/contracts/HaikuNFT.cdc#L275) function which uses the model contracts to generate the text. [Hardcoded into this function](https://github.com/docmarionum1/bitku/blob/main/cadence/contracts/HaikuNFT.cdc#L285) is that 90% of the payment received for the haiku is deposited directly into a charity's FLOW account. There are a maximum of 1024 Bitku that can be generated with the price increasing slightly each time.
+When you click "Mint Bitku" on the Bitku website it sends a transaction on the Flow blockchain to the primary contract's [`mintHaiku`](https://github.com/docmarionum1/bitku/blob/main/cadence/contracts/HaikuNFT.cdc#L275) function which uses the model contracts to generate the text. 
 
 ## Status
 
@@ -47,7 +46,6 @@ The steps below outline how to set the project up locally and test it.
 4. Deploy the contracts from the root directory with `flow project deploy --network=emulator --update`
 5. Create `web/.env.local` from `web/.env.local.template`
 6. Run `yarn start` in `web/`
-7. Before trying to mint any haikus, Create new test accounts from the fcl-dev-wallet web interface to create the charity address by clicking "Initialize Dev Wallet for more Accounts" on the screen to connect your wallet. Then enable FUSD for that account via the menu in the top right of the Bitku application.
 
 ### Testing
 
@@ -61,7 +59,6 @@ TODO: Allow limit to be configured in sendTransaction in `web/node_modules/flow-
 
 ### Deployment
 
-1. Create accounts on testnet for the bitku contracts and the charity by following these [instructions](https://docs.onflow.org/dapp-deployment/testnet-deployment/#getting-started-on-testnet). Update `flow.json`.
-2. Deploy the contracts with `flow project deploy --network=testnet --update`
-3. From `web` run `npm run build` and then copy the files into the deployment repository and commit and push them to github.
-4. If `HaikuNFT` needs to be updated, replace the from `*.cdc` imports with the actual addresses and then update it with `flow accounts update-contract HaikuNFT cadence/contracts/HaikuNFT.cdc --network=testnet --signer testnet-bitku-account`
+1. Deploy the contracts with `flow project deploy --network=testnet --update`
+2. From `web` run `npm run build` and then copy the files into the deployment repository and commit and push them to github.
+3. If `HaikuNFT` needs to be updated, replace the from `*.cdc` imports with the actual addresses and then update it with `flow accounts update-contract HaikuNFT cadence/contracts/HaikuNFT.cdc --network=testnet --signer testnet-bitku-account`
