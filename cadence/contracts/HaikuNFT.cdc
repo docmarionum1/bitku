@@ -2,6 +2,7 @@
 // stores the text of each haiku and the function for minting+generating haiku.
 
 import NonFungibleToken from "./NonFungibleToken.cdc"
+import FlowToken from "./FlowToken.cdc"
 import FUSD from "./FUSD.cdc"
 import FungibleToken from "./FungibleToken.cdc"
 
@@ -18,6 +19,8 @@ pub contract HaikuNFT: NonFungibleToken {
     pub let priceDelta: UFix64
     pub let HaikuCollectionStoragePath: StoragePath
     pub let HaikuCollectionPublicPath: PublicPath
+    pub let flowStorageFeePerHaiku: UFix64
+    pub let transactionFee: UFix64
 
     pub event ContractInitialized()
     pub event Withdraw(id: UInt64, from: Address?)
@@ -160,7 +163,14 @@ pub contract HaikuNFT: NonFungibleToken {
 
     pub fun currentPrice(): UFix64 {
         let i = UFix64(self.totalSupply - self.preMint)
-        return i*i*i*self.priceDelta
+        var price = i*i*i*self.priceDelta
+
+        // If it's the very first bitku, spot them the transaction fee to keep the price 0 FUSD
+        if i > 0.0 {
+            price = price + self.transactionFee
+        }
+
+        return price
     }
 
     pub fun captalize(_ a: String): String {
@@ -275,7 +285,7 @@ pub contract HaikuNFT: NonFungibleToken {
         return haiku
     }
     
-    pub fun mintHaiku(recipient: &NonFungibleToken.Collection, vault: @FungibleToken.Vault, id: UInt64) {
+    pub fun mintHaiku(recipient: &NonFungibleToken.Collection, vault: @FungibleToken.Vault, id: UInt64, flowReceiverRef: &FlowToken.Vault{FungibleToken.Receiver}) {
         pre {
             // Make sure that the ID matches the current ID
             id == HaikuNFT.totalSupply: "The given ID has already been minted."
@@ -307,7 +317,17 @@ pub contract HaikuNFT: NonFungibleToken {
 
         let haiku = HaikuNFT.generateHaiku(randNumber)
 
+        // Spot the minter some FLOW to cover storage costs
+        let flowVaultRef = self.account.borrow<&FlowToken.Vault>(from: /storage/flowTokenVault)
+			?? panic("Could not borrow reference to the contract's FLOW Vault!")
+
+        let flowVault <- flowVaultRef.withdraw(amount: self.flowStorageFeePerHaiku)
+        flowReceiverRef.deposit(from: <-flowVault)
+
+        // Deposit the new haiku into the user's haiku collection
         recipient.deposit(token: <- create HaikuNFT.NFT(initID: HaikuNFT.totalSupply, text: haiku))
+
+        // Increment the total supply
         HaikuNFT.totalSupply = HaikuNFT.totalSupply + (1 as UInt64)
     }
 
@@ -323,6 +343,10 @@ pub contract HaikuNFT: NonFungibleToken {
         self.preMint = 64
 
         self.priceDelta = 0.00000345
+
+        // Transfer a small amount of FLOW to the minter to cover any possible storage costs
+        self.flowStorageFeePerHaiku = 0.00005 // Amount of FLOW to transfer
+        self.transactionFee = 0.1 // FUSD transaction fee to cover the above FLOW
 
         // Create a Collection resource and save it to storage
         let collection <- create Collection()

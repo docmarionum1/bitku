@@ -3,6 +3,7 @@ import * as t from "@onflow/types";
 
 export const MINT_HAIKU_TRANSACTION = `
 import FungibleToken from 0xFUNGIBLETOKENADDRESS
+import FlowToken from 0xTOKENADDRESS
 import FUSD from 0xFUSDADDRESS
 import NonFungibleToken from 0xNONFUNGIBLETOKENADDRESS
 
@@ -11,6 +12,7 @@ import HaikuNFT from 0xHAIKUNFTADDRESS
 transaction (haikuID: UInt64, price: UFix64) {
     let collection: &NonFungibleToken.Collection
     let sentVault: @FungibleToken.Vault
+    let receiverRef: &FlowToken.Vault{FungibleToken.Receiver}
     
     prepare(signer: AuthAccount) {
         // if the account doesn't already have a collection
@@ -34,12 +36,19 @@ transaction (haikuID: UInt64, price: UFix64) {
         let vaultRef = signer.borrow<&FUSD.Vault>(from: /storage/fusdVault)
           ?? panic("Could not borrow reference to the owner's Vault!")
 
+        // Get a reference to the signer's FLOW receiver to receive FLOW necessary to ensure they have
+        // enough storage
+        self.receiverRef =  signer
+          .getCapability(/public/flowTokenReceiver)
+          .borrow<&FlowToken.Vault{FungibleToken.Receiver}>()
+        ?? panic("Could not borrow receiver reference to the recipient's Vault")
+
         // Withdraw tokens from the signer's stored vault
         self.sentVault <- vaultRef.withdraw(amount: price)
     }
 
     execute {
-        HaikuNFT.mintHaiku(recipient: self.collection, vault: <- self.sentVault, id: haikuID)
+        HaikuNFT.mintHaiku(recipient: self.collection, vault: <- self.sentVault, id: haikuID, flowReceiverRef: self.receiverRef)
     }
 }
 `;
