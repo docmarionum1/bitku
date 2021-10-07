@@ -34,7 +34,7 @@ transaction (haikuID: UInt64, price: UFix64) {
 
         // Get a reference to the signer's stored vault
         let vaultRef = signer.borrow<&FUSD.Vault>(from: /storage/fusdVault)
-          ?? panic("Could not borrow reference to the owner's Vault!")
+          ?? panic("Could not borrow reference to the owner's FUSD Vault!")
 
         // Get a reference to the signer's FLOW receiver to receive FLOW necessary to ensure they have
         // enough storage
