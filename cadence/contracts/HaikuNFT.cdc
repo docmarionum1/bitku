@@ -295,6 +295,8 @@ pub contract HaikuNFT: NonFungibleToken {
 
             // Make sure that the given vault has enough FLOW
             vault.balance >= HaikuNFT.currentPrice(): "The given FLOW vault doesn't have enough FLOW."
+
+            id >= HaikuNFT.preMint: "The pre-mint is not finished."
         }
         // https://github.com/onflow/flow-core-contracts/blob/master/transactions/flowToken/transfer_tokens.cdc
 
@@ -331,6 +333,30 @@ pub contract HaikuNFT: NonFungibleToken {
         HaikuNFT.totalSupply = HaikuNFT.totalSupply + (1 as UInt64)
     }
 
+    
+    // Premint 8 haikus; this is done in a private function that will be called 8 times to result in a total
+    // of 64. This is done outside of contract deployment because the computation limit is too low to do
+    // all 64.
+    pub fun preMintHaikus(num: UInt64): UInt64 {
+        pre {
+            // Make sure that the this wouldn't exceed the pre-mint
+            (HaikuNFT.totalSupply + num) <= HaikuNFT.preMint: "This would pre-mint more than the limit"
+        }
+
+        var maxId = self.totalSupply + num
+
+        let collection = self.account.borrow<&NonFungibleToken.Collection>(from: HaikuNFT.HaikuCollectionStoragePath)
+            ?? panic("Could not borrow reference to NFT Collection!")
+
+        while self.totalSupply < maxId {
+            let haiku = HaikuNFT.generateHaiku(self.totalSupply * UInt64(0xdeadbeef))
+            collection.deposit(token: <- create HaikuNFT.NFT(initID: HaikuNFT.totalSupply, text: haiku))
+            self.totalSupply = self.totalSupply + (1 as UInt64) 
+        }
+
+        return self.totalSupply
+    }
+
 
     init() {
         // Set paths
@@ -350,13 +376,6 @@ pub contract HaikuNFT: NonFungibleToken {
 
         // Create a Collection resource and save it to storage
         let collection <- create Collection()
-
-        // Pre-mint n haikus and save them to this collection
-        while self.totalSupply < self.preMint {
-            let haiku = HaikuNFT.generateHaiku(self.totalSupply * UInt64(0xdeadbeef))
-            collection.deposit(token: <- create HaikuNFT.NFT(initID: HaikuNFT.totalSupply, text: haiku))
-            self.totalSupply = self.totalSupply + (1 as UInt64) 
-        }
 
         self.account.save(<-collection, to: self.HaikuCollectionStoragePath)
 

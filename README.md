@@ -44,6 +44,7 @@ The steps below outline how to set the project up locally and test it.
     - Add the correct address and keys for your emulator user to `.env.local`
     - `npm run dev`
 4. Deploy the contracts from the root directory with `flow project deploy --network=emulator --update`
+5. Run `flow transactions send cadence/transactions/pre_mint.cdc --gas-limit 9999999 64`
 5. Create `web/.env.local` from `web/.env.local.template`
 6. Run `yarn start` in `web/`
 
@@ -59,6 +60,9 @@ TODO: Allow limit to be configured in sendTransaction in `web/node_modules/flow-
 
 ### Deployment
 
-1. Deploy the contracts with `flow project deploy --network=testnet --update`
-2. From `web` run `npm run build` and then copy the files into the deployment repository and commit and push them to github.
-3. If `HaikuNFT` needs to be updated, replace the from `*.cdc` imports with the actual addresses and then update it with `flow accounts update-contract HaikuNFT cadence/contracts/HaikuNFT.cdc --network=testnet --signer testnet-bitku-account`
+1. [Create an account](https://docs.onflow.org/concepts/accessing-testnet/#account-creation-and-token-funding-requests) and update the address and keys for `testnet-bitku-account` in `flow.json`.
+2. Run `flow transactions send cadence/transactions/setup_fusd_vault.cdc --network=testnet --signer testnet-bitku-account`
+3. Deploy the contracts with `flow project deploy --network=testnet --update`
+4. Run `flow transactions send cadence/transactions/pre_mint.cdc --network=testnet --signer testnet-bitku-account --gas-limit 9999 8` 8 times to complete the pre-mint.
+5. From `web` run `npm run build` and then copy the files into the deployment repository and commit and push them to github.
+6. If `HaikuNFT` needs to be updated, replace the from `*.cdc` imports with the actual addresses and then update it with `flow accounts update-contract HaikuNFT cadence/contracts/HaikuNFT.cdc --network=testnet --signer testnet-bitku-account`

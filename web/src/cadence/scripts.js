@@ -51,7 +51,6 @@ pub fun main(haikus: { UInt64: Address }): { UInt64: String } {
     response[id] = ref.borrowHaiku(id: id).text
   }
 
-  //return ref.borrowHaiku(id: id).text
   return response
 }
 `;

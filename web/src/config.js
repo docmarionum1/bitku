@@ -23,7 +23,7 @@ if (process.env.REACT_APP_FLOW_NETWORK === "emulator") {
   FEATURED_ADDRESS = contract_address;
   LOGO_URL = "http://localhost:3000/logo512.png"
 } else if (process.env.REACT_APP_FLOW_NETWORK === "testnet") {
-  const contract_address = "0x15032505846acdad";
+  const contract_address = "0x15fa543552f2c1f0";
   config()
     .put("0xFUNGIBLETOKENADDRESS", "0x9a0766d93b6608b7")
     .put("0xTOKENADDRESS", "0x7e60df042a9c0868")
