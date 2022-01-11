@@ -296,6 +296,7 @@ pub contract HaikuNFT: NonFungibleToken {
             // Make sure that the given vault has enough FLOW
             vault.balance >= HaikuNFT.currentPrice(): "The given FLOW vault doesn't have enough FLOW."
 
+            // Don't allow someone to mint a haiku to an external collection until the premint is finished
             id >= HaikuNFT.preMint: "The pre-mint is not finished."
         }
         // https://github.com/onflow/flow-core-contracts/blob/master/transactions/flowToken/transfer_tokens.cdc
@@ -334,9 +335,11 @@ pub contract HaikuNFT: NonFungibleToken {
     }
 
     
-    // Premint 8 haikus; this is done in a private function that will be called 8 times to result in a total
-    // of 64. This is done outside of contract deployment because the computation limit is too low to do
-    // all 64.
+    // Premint 8 haikus; this is done in function that will be called 8 times to result in a total of 64 haikus. 
+    // This is done outside of contract deployment because the computation limit is too low to do all 64 during deployment.
+    // This function will save each haiku to the contract's collection.
+    // This function will fail if the premint number (64) has already been exceeded. 
+    // So this function can be called more times, but will have no effect.
     pub fun preMintHaikus(num: UInt64): UInt64 {
         pre {
             // Make sure that the this wouldn't exceed the pre-mint
