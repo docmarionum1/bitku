@@ -4,12 +4,13 @@
 *node_modules
 /.pnp
 .pnp.js
+package-lock.json
 
 # testing
 /coverage
 
 # production
-/web/build*
+/lib/js/build*
 
 # misc
 .DS_Store
@@ -25,5 +26,9 @@ yarn-error.log*
 # Flow
 fcl-dev-wallet
 flow.json
-cadence/contracts/templates
+contracts/templates
 keys.txt
+
+# Development transactions
+transactions/check_storage.cdc
+transactions/transfer_fusd.cdc
