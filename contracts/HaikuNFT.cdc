@@ -1,15 +1,15 @@
 // This contract implements Bitku's HaikuNFT including the NFT resource which
 // stores the text of each haiku and the function for minting+generating haiku.
 
-import NonFungibleToken from "./NonFungibleToken.cdc"
-import FlowToken from "./FlowToken.cdc"
-import FUSD from "./FUSD.cdc"
-import FungibleToken from "./FungibleToken.cdc"
+import NonFungibleToken from 0x1d7e57aa55817448
+import FlowToken from 0x1654653399040a61
+import FUSD from 0x3c5959b568896393
+import FungibleToken from 0xf233dcee88fe0abe
 
-import Words from "./Words.cdc"
-import Model from "./Model.cdc"
-import SpaceModel from "./SpaceModel.cdc"
-import EndModel from "./EndModel.cdc"
+import Words from 0x3885d9d426d2ef5c
+import Model from 0x3885d9d426d2ef5c
+import SpaceModel from 0x3885d9d426d2ef5c
+import EndModel from 0x3885d9d426d2ef5c
 
 pub contract HaikuNFT: NonFungibleToken {
 
