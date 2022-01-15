@@ -32,6 +32,8 @@ TODO: Allow limit to be configured in sendTransaction in `lib/js/node_modules/fl
 1. [Create an account](https://docs.onflow.org/concepts/accessing-testnet/#account-creation-and-token-funding-requests) and update the address and keys for `testnet-bitku-account` in `flow.json`.
 2. Run `flow transactions send transactions/setup_fusd_vault.cdc --network=testnet --signer testnet-bitku-account`
 3. Deploy the contracts with `flow project deploy --network=testnet --update`
-4. Run `flow transactions send transactions/pre_mint.cdc --network=testnet --signer testnet-bitku-account --gas-limit 9999 8` 8 times to complete the pre-mint.
-5. From `web` run `npm run build` and then copy the files into the deployment repository and commit and push them to github.
+4. Run `for i in {1..32}; do flow transactions send transactions/pre_mint.cdc --network=testnet --signer testnet-bitku-account --gas-limit 9999 2; done` to complete the pre-mint.
+5. From `lib/js` run `npm run build` and then copy `build` into the deployment repository and commit and push them to github.
+6. To test on testnet, create a Blocto account and
+[fund it with FUSD](https://testnet-faucet.onflow.org/fund-account), then attempt to mint haikus.
 6. If `HaikuNFT` needs to be updated, replace the from `*.cdc` imports with the actual addresses and then update it with `flow accounts update-contract HaikuNFT contracts/HaikuNFT.cdc --network=testnet --signer testnet-bitku-account`
