@@ -241,40 +241,68 @@ pub contract HaikuNFT: NonFungibleToken {
 
                 // Go through the options that we found
                 let cumSums = options.values
-                let maxCumSum = cumSums.removeLast()
                 randNumber = HaikuNFT.rand(i: randNumber, m: 666)
-                let i = randNumber % UInt64(maxCumSum)
 
-                for word in options.keys {
-                    let cumSum = options[word]!
-                    let uncompressedWord = Words.uncompress[word]!
-                    if UInt64(cumSum) >= i {
-                        if uncompressedWord == "END" {
-                            previousWord = "END"
-                            //end = true
-                            break
-                        }
+                // Due to a change in the cadence implementation (https://github.com/onflow/cadence/pull/1156)
+                // We can no longer rely on dictionaries to be ordered, so we need to get the max cumulative sum
+                // by checking all of the values. Then we'll need to go through and find the closest value greater than
+                // i.
 
-                        if uncompressedWord == "\n" {
-                            haiku = haiku.concat("\n")
-                            lineNum = lineNum + 1
-                            lineSyllables = 0
-                        } else if previousWord == "b" || previousWord == "c" { // START or \n
-                            haiku = haiku.concat(
-                                HaikuNFT.captalize(uncompressedWord.slice(from: 0, upTo: 1))
-                            ).concat(
-                                uncompressedWord.slice(from: 1, upTo: uncompressedWord.length)
-                            )
-                        } else {
-                            haiku = haiku.concat(" ").concat(uncompressedWord)
-                        }
-                        previousPreviousWord = previousWord
-                        previousWord = word
-                        totalSyllables = totalSyllables + Words.syllables[uncompressedWord]!
-                        lineSyllables = lineSyllables + Words.syllables[uncompressedWord]!
-                        break
+                // Get the max cumulative sum
+                var maxCumSum = 0
+                for cumSum in cumSums {
+                    if cumSum > maxCumSum {
+                        maxCumSum = cumSum
                     }
                 }
+
+                // Our target index
+                let i = Int(randNumber % UInt64(maxCumSum))
+
+                // Keep track of the best match
+                var best_match = 99999
+                var best_match_index = 0
+
+                // Find the best match in the array of cumulative sums
+                var index = 0
+                while index < cumSums.length {
+                    let cumSum = cumSums[index]
+                    if cumSum >= i && cumSum < best_match {
+                        best_match = cumSum
+                        best_match_index = index
+                    }
+                    index = index + 1
+                }
+                
+                // Get the word at the index of the best match
+                let word = options.keys[best_match_index]
+                let uncompressedWord = Words.uncompress[word]!
+
+
+                // Process the word, appending to the haiku and ending if necessary
+                
+                if uncompressedWord == "END" {
+                    previousWord = "END"
+                    break
+                }
+
+                if uncompressedWord == "\n" {
+                    haiku = haiku.concat("\n")
+                    lineNum = lineNum + 1
+                    lineSyllables = 0
+                } else if previousWord == "b" || previousWord == "c" { // START or \n
+                    haiku = haiku.concat(
+                        HaikuNFT.captalize(uncompressedWord.slice(from: 0, upTo: 1))
+                    ).concat(
+                        uncompressedWord.slice(from: 1, upTo: uncompressedWord.length)
+                    )
+                } else {
+                    haiku = haiku.concat(" ").concat(uncompressedWord)
+                }
+                previousPreviousWord = previousWord
+                previousWord = word
+                totalSyllables = totalSyllables + Words.syllables[uncompressedWord]!
+                lineSyllables = lineSyllables + Words.syllables[uncompressedWord]!
 
                 if end {
                     break

@@ -33,5 +33,5 @@ When you click "Mint Bitku" on the Bitku website it sends a transaction on the F
 
 # Development
 
-See [`docs/development.md`](https://github.com/docmarionum1/bitku/blob/main/docs/development.md) for 
+See [`docs/developing.md`](https://github.com/docmarionum1/bitku/blob/main/docs/developing.md) for 
 information about setting this project up locally, testing, and deployment.
