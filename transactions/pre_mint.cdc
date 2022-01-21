@@ -1,4 +1,4 @@
-import HaikuNFT from 0x3885d9d426d2ef5c
+import HaikuNFT from 0xf61e40c19db2a9e2
 
 transaction(num: UInt64) {
   prepare(signer: AuthAccount) {}

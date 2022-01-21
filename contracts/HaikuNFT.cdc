@@ -6,10 +6,10 @@ import FlowToken from 0x1654653399040a61
 import FUSD from 0x3c5959b568896393
 import FungibleToken from 0xf233dcee88fe0abe
 
-import Words from 0x3885d9d426d2ef5c
-import Model from 0x3885d9d426d2ef5c
-import SpaceModel from 0x3885d9d426d2ef5c
-import EndModel from 0x3885d9d426d2ef5c
+import Words from 0xf61e40c19db2a9e2
+import Model from 0xf61e40c19db2a9e2
+import SpaceModel from 0xf61e40c19db2a9e2
+import EndModel from 0xf61e40c19db2a9e2
 
 pub contract HaikuNFT: NonFungibleToken {
 
