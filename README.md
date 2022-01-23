@@ -43,6 +43,9 @@ When you click "Mint Bitku" on the Bitku website it sends a transaction on the F
 [Bitku is currently live on the Flow mainnet](https://bitku.art/). 
 The [Github issues page](https://github.com/docmarionum1/bitku/issues) lists future enhancements. Please submit any bugs found there.
 
+## Get Involved
+
+[Discord](https://discord.gg/YhcZuEdQck)
 
 # Development
 
