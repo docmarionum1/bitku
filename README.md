@@ -1,22 +1,34 @@
 # Bitku
 
-[Bitku](https://testnet.bitku.art/) is an (in-development) project to create generative haiku completely on the [Flow](https://www.onflow.org/) blockchain. With Bitku I set out to accomplish two novel (possibly first-of-its-kind) goals:
+[Bitku](https://bitku.art/) is a project to create generative haiku completely on the [Flow](https://www.onflow.org/) blockchain. 
+With Bitku I set out to accomplish two novel (possibly first-of-its-kind) goals:
 
   1. Create a text-based generative NFT
   2. Embed a machine-learning model directly into a smart contract and generate outputs completely on the blockchain without any oracles or side-effects
 
-## How do I create a Bitku?
-
-[Bitku is currently live on the Flow testnet](https://testnet.bitku.art/). To use it:
+## How do I create (mint) a Bitku?
 
 1. Click "Connect Wallet" in the upper-right.
 2. If you don't have a wallet already, choose "Blocto" from the list of providers and create an account.
-3. If you don't have any FLOW (currency) on the testnet, use the [testnet faucet](https://testnet-faucet-v2.onflow.org/) to receive free fake testnet money by entering the wallet address from the previous step.
+3. If you don't have FUSD, see the next section for information about how to purchase some.
 4. Click "Mint Bitku" and approve the transaction that pops up. 
 5. Wait a few seconds for the blockchain to process the transaction.
 6. ???
 7. Bitku!
 8. That bitku is now stored in your wallet. You can come back and view all of the Bitku that you've minted under "My Bitku."
+
+### How to get FUSD
+
+FUSD (Flow USD) is the USD-Stablecoin on the Flow blockchain. There are currently a few options:
+
+- Use the Ramp widget from within Bitku. If you don't have enough FUSD to cover the price of minting a Bitku, then you will be prompted
+to purchase FUSD with Ramp. The purchase amount may be higher than the price of the Bitku due to Ramp's minimums. This method doesn't support credit cards.
+- If you want to use a credit card, you can purchase FUSD directly on [Ramp's website](https://ramp.network/buy/).
+  - Note: Ramp doesn't support FUSD purchases from within the United States. 
+- [Moonpay](https://www.moonpay.com/) also allows FUSD purchase with credit card, but has a higher minimum purchase.
+- You can use [BloctoSwap](https://swap.blocto.app/#/swap) to teleport several currencies from other blockchains (Ethereum, Binance and Solana) and then
+swap them for FUSD.
+- View Flow's [official documentation on getting FUSD](https://docs.onflow.org/fusd/providers/) for more information. 
 
 ## How does it work?
 
@@ -28,8 +40,12 @@ When you click "Mint Bitku" on the Bitku website it sends a transaction on the F
 
 ## Status
 
-[Bitku is currently live on the Flow testnet](https://testnet.bitku.art/). Besides testing, the [issues page](https://github.com/docmarionum1/bitku/issues) lists the outstanding work that I need to do. Please submit any bugs found there.
+[Bitku is currently live on the Flow mainnet](https://bitku.art/). 
+The [Github issues page](https://github.com/docmarionum1/bitku/issues) lists future enhancements. Please submit any bugs found there.
 
+## Get Involved
+
+[Discord](https://discord.gg/YhcZuEdQck)
 
 # Development
 
