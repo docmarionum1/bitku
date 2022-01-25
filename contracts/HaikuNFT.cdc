@@ -37,7 +37,7 @@ pub contract HaikuNFT: NonFungibleToken {
     }
 
     pub resource interface HaikuCollectionPublic {
-        pub fun borrowHaiku(id: UInt64): &HaikuNFT.NFT
+        pub fun borrowHaiku(id: UInt64): &HaikuNFT.NFT?
 
         // Require all of the base NFT functions to be delcared as well
         pub fun deposit(token: @NonFungibleToken.NFT)
@@ -89,9 +89,13 @@ pub contract HaikuNFT: NonFungibleToken {
             return &self.ownedNFTs[id] as &NonFungibleToken.NFT
         }
 
-        pub fun borrowHaiku(id: UInt64): &HaikuNFT.NFT {
-            let ref = &self.ownedNFTs[id] as auth &NonFungibleToken.NFT
-            return ref as! &HaikuNFT.NFT
+        pub fun borrowHaiku(id: UInt64): &HaikuNFT.NFT? {
+            if self.ownedNFTs[id] != nil {
+                let ref = &self.ownedNFTs[id] as auth &NonFungibleToken.NFT
+                return ref as! &HaikuNFT.NFT
+            } else {
+                return nil
+            }
         }
 
         destroy() {
