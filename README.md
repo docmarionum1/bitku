@@ -30,6 +30,15 @@ to purchase FUSD with Ramp. The purchase amount may be higher than the price of 
 swap them for FUSD.
 - View Flow's [official documentation on getting FUSD](https://docs.onflow.org/fusd/providers/) for more information. 
 
+### How to Send a Bitku to Another Account
+
+1. Ensure that the recipient has a Bitku collection in their account. If they've never minted a Bitku, they can
+create an empty collection by using the menu in the top left of Bitku to connect their wallet and then clicking
+"Create empty Bitku collection."
+2. Connect the wallet that contains the Bitku to send, scroll down the "My Bitku" section and click on the menu
+≡ for the Bitku to send, and then click "Send Bitku #X to another address." Enter the address that you want to send
+the Bitku to and click "Send."
+
 ## How does it work?
 
 The core of Bitku is comprised of 
