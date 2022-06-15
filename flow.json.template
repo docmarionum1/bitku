@@ -14,7 +14,8 @@
 		"NonFungibleToken": {
 			"source": "./contracts/NonFungibleToken.cdc",
 			"aliases": {
-				"testnet": "0x631e88ae7f1d7c20"
+				"testnet": "0x631e88ae7f1d7c20",
+				"mainnet": "0x1d7e57aa55817448"
 			}
 		},
 		"FlowToken": {
@@ -71,6 +72,15 @@
 		},
 	},
 	"deployments": {
+		"mainnet": {
+			"mainnet-bitku-account": [
+				"Model",
+				"SpaceModel",
+				"EndModel",
+				"Words",
+				"HaikuNFT"
+			]
+		},
 		"testnet": {
 			"testnet-bitku-account": [
 				"Model",
