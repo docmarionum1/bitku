@@ -62,6 +62,7 @@ pub contract HaikuNFT: NonFungibleToken {
                 Type<MetadataViews.License>(),
                 Type<MetadataViews.NFTCollectionData>(),
                 Type<MetadataViews.NFTCollectionDisplay>(),
+                Type<MetadataViews.Royalties>(),
                 Type<MetadataViews.Serial>()
             ]
         }
@@ -129,6 +130,8 @@ pub contract HaikuNFT: NonFungibleToken {
                             "github": MetadataViews.ExternalURL("https://github.com/docmarionum1/bitku")
                         }
                     )
+                case Type<MetadataViews.Royalties>():
+                    return MetadataViews.Royalties([])
                 case Type<MetadataViews.Serial>():
                     return MetadataViews.Serial(
                         self.id
