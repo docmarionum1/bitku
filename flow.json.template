@@ -11,6 +11,13 @@
 		"SpaceModel": "./contracts/SpaceModel.cdc",
 		"EndModel": "./contracts/EndModel.cdc",
 		"HaikuNFT": "./contracts/HaikuNFT.cdc",
+		"MetadataViews": {
+			"source": "./contracts/MetadataViews.cdc",
+			"aliases": {
+				"testnet": "0x631e88ae7f1d7c20",
+				"mainnet": "0x1d7e57aa55817448"
+			}
+		},
 		"NonFungibleToken": {
 			"source": "./contracts/NonFungibleToken.cdc",
 			"aliases": {

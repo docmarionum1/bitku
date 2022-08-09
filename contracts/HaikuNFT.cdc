@@ -2,6 +2,7 @@
 // stores the text of each haiku and the function for minting+generating haiku.
 
 import NonFungibleToken from "./NonFungibleToken.cdc"
+import MetadataViews from "./MetadataViews.cdc"
 import FlowToken from "./FlowToken.cdc"
 import FUSD from "./FUSD.cdc"
 import FungibleToken from "./FungibleToken.cdc"
@@ -26,13 +27,115 @@ pub contract HaikuNFT: NonFungibleToken {
     pub event Withdraw(id: UInt64, from: Address?)
     pub event Deposit(id: UInt64, to: Address?)
 
-    pub resource NFT: NonFungibleToken.INFT {
+    pub resource NFT: NonFungibleToken.INFT, MetadataViews.Resolver {
         pub let id: UInt64
         pub let text: String
 
         init(initID: UInt64, text: String) {
             self.id = initID
             self.text = text
+        }
+
+        pub fun getRenderedURL(): String {
+            var text = ""
+            var i = 0
+            while i < self.text.length {
+                switch self.text[i].toString() {
+                    case " ":
+                        text = text.concat("%20")
+                    case "\n":
+                        text = text.concat("%0A")
+                    default:
+                        text = text.concat(self.text[i].toString())
+                }
+                i = i + 1
+            }
+
+            return "https://render.bitku.art/?text=".concat(text)
+        }
+
+        pub fun getViews(): [Type] {
+            return [
+                Type<MetadataViews.Display>(),
+                Type<MetadataViews.Editions>(),
+                Type<MetadataViews.ExternalURL>(),
+                Type<MetadataViews.License>(),
+                Type<MetadataViews.NFTCollectionData>(),
+                Type<MetadataViews.NFTCollectionDisplay>(),
+                Type<MetadataViews.Serial>()
+            ]
+        }
+
+        pub fun resolveView(_ view: Type): AnyStruct? {
+            // Note: This needs to be changed for each environment before deployment
+            let base_url = "https://bitku.art/"
+            switch view {
+                case Type<MetadataViews.Display>():
+                    return MetadataViews.Display(
+                        name: "Bitku # ".concat(self.id.toString()),
+                        description: self.text,
+                        thumbnail: MetadataViews.HTTPFile(
+                            url: self.getRenderedURL()
+                        )
+                    )
+                case Type<MetadataViews.Editions>():
+                    let editionInfo = MetadataViews.Edition(name: "Bitku", number: self.id, max: HaikuNFT.maxSupply)
+                    let editionList: [MetadataViews.Edition] = [editionInfo]
+                    return MetadataViews.Editions(
+                        editionList
+                    )
+                case Type<MetadataViews.ExternalURL>():
+                    let address = self.owner?.address!
+                    return MetadataViews.ExternalURL(
+                        base_url
+                        .concat("#")
+                        .concat(address.toString())
+                        .concat("/")
+                        .concat(self.id.toString())
+                    )
+                case Type<MetadataViews.License>():
+                    return MetadataViews.License("Apache-2.0")
+                case Type<MetadataViews.NFTCollectionData>():
+                    return MetadataViews.NFTCollectionData(
+                        storagePath: HaikuNFT.HaikuCollectionStoragePath,
+                        publicPath: HaikuNFT.HaikuCollectionPublicPath,
+                        providerPath: /private/BitkuCollection,
+                        publicCollection: Type<&HaikuNFT.Collection{HaikuNFT.HaikuCollectionPublic}>(),
+                        publicLinkedType: Type<&HaikuNFT.Collection{HaikuNFT.HaikuCollectionPublic,NonFungibleToken.CollectionPublic,NonFungibleToken.Receiver,MetadataViews.ResolverCollection}>(),
+                        providerLinkedType: Type<&HaikuNFT.Collection{HaikuNFT.HaikuCollectionPublic,NonFungibleToken.CollectionPublic,NonFungibleToken.Provider,MetadataViews.ResolverCollection}>(),
+                        createEmptyCollectionFunction: (fun (): @NonFungibleToken.Collection {
+                            return <-HaikuNFT.createEmptyCollection()
+                        })
+                    )
+                case Type<MetadataViews.NFTCollectionDisplay>():
+                    return MetadataViews.NFTCollectionDisplay(
+                        name: "Bitku",
+                        description: "Generative Haiku NFT on Flow",
+                        externalURL: MetadataViews.ExternalURL(base_url),
+                        squareImage: MetadataViews.Media(
+                            file: MetadataViews.HTTPFile(
+                                url: "https://bitku.art/logo512.png"
+                            ),
+                            mediaType: "image/png"
+                        ),
+                        bannerImage: MetadataViews.Media(
+                            file: MetadataViews.HTTPFile(
+                                url: "https://bitku.art/banner1200x630.png"
+                            ),
+                            mediaType: "image/png"
+                        ),
+                        socials: {
+                            "discord": MetadataViews.ExternalURL("https://discord.gg/bKTHTd5ztx"),
+                            "github": MetadataViews.ExternalURL("https://github.com/docmarionum1/bitku")
+                        }
+                    )
+                case Type<MetadataViews.Serial>():
+                    return MetadataViews.Serial(
+                        self.id
+                    )
+            }
+
+            return nil
         }
     }
 
@@ -45,7 +148,7 @@ pub contract HaikuNFT: NonFungibleToken {
         pub fun borrowNFT(id: UInt64): &NonFungibleToken.NFT
     }
 
-    pub resource Collection: NonFungibleToken.Provider, NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic, HaikuCollectionPublic {
+    pub resource Collection: NonFungibleToken.Provider, NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic, HaikuCollectionPublic, MetadataViews.ResolverCollection {
         // dictionary of NFT conforming tokens
         // NFT is a resource type with an `UInt64` ID field
         pub var ownedNFTs: @{UInt64: NonFungibleToken.NFT}
@@ -92,6 +195,12 @@ pub contract HaikuNFT: NonFungibleToken {
         pub fun borrowHaiku(id: UInt64): &HaikuNFT.NFT? {
             let ref = &self.ownedNFTs[id] as auth &NonFungibleToken.NFT?
             return ref as! &HaikuNFT.NFT?
+        }
+
+        pub fun borrowViewResolver(id: UInt64): &AnyResource{MetadataViews.Resolver} {
+            let nft = (&self.ownedNFTs[id] as auth &NonFungibleToken.NFT?)!
+            let haikuNFT = nft as! &HaikuNFT.NFT
+            return haikuNFT as &AnyResource{MetadataViews.Resolver}
         }
 
         destroy() {
