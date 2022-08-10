@@ -523,7 +523,7 @@ pub contract HaikuNFT: NonFungibleToken {
         self.account.save(<-collection, to: self.HaikuCollectionStoragePath)
 
         // create a public capability for the collection
-        self.account.link<&HaikuNFT.Collection{NonFungibleToken.CollectionPublic, HaikuNFT.HaikuCollectionPublic}>(
+        self.account.link<&HaikuNFT.Collection{NonFungibleToken.CollectionPublic, HaikuNFT.HaikuCollectionPublic, MetadataViews.ResolverCollection}>(
             self.HaikuCollectionPublicPath,
             target: self.HaikuCollectionStoragePath
         )
